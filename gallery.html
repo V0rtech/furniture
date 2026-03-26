@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaign Gallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --teal: #1A2F6B;
+      --teal-light: #233880;
+      --teal-dim: #111E4A;
+      --teal-bg: #F0F2FA;
+      --teal-faint: #E3E7F5;
+      --accent: #EBF0FF;
+      --gold: #C8922A;
+      --warn: #D94F3B;
+      --mid: #6B7A99;
+      --text: #1A1E2E;
+      --text-light: #4A5272;
+      --border: #D5DAF0;
+      --white: #FFFFFF;
+      --card-shadow: 0 2px 16px rgba(26, 47, 107, 0.08);
+      --card-shadow-hover: 0 8px 32px rgba(26, 47, 107, 0.18);
+      --pill-gradient: linear-gradient(135deg, #1A2F6B 0%, #4A6CF7 100%);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--teal-bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .back-link {
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .page-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .page-body {
+      padding: 28px 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .brand-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .brand-pill {
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1.5px solid var(--teal);
+      background: transparent;
+      color: var(--teal);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .brand-pill:hover {
+      background: var(--teal-faint);
+    }
+
+    .brand-pill.active {
+      background: var(--pill-gradient);
+      border-color: transparent;
+      color: var(--white);
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      padding: 14px 20px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .filter-btn.active {
+      background: var(--pill-gradient);
+      border-color: transparent;
+      color: var(--white);
+    }
+
+    .sort-select {
+      padding: 7px 14px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .sort-select:focus {
+      border-color: var(--teal);
+    }
+
+    .ad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .ad-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .ad-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .ad-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      background: #111;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ad-card:hover {
+      transform: scale(1.02);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .ad-card img,
+    .ad-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .status-badge.active {
+      background: var(--pill-gradient);
+      color: #fff;
+    }
+
+    .status-badge.inactive {
+      background: rgba(107, 122, 153, 0.85);
+      color: #fff;
+    }
+
+    .card-meta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 12px 10px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.88);
+      font-weight: 500;
+    }
+
+    .play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .play-icon::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 8px 0 8px 16px;
+      border-color: transparent transparent transparent rgba(255, 255, 255, 0.9);
+      margin-left: 3px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+      font-size: 15px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 28px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 38px;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .page-btn.active {
+      background: var(--pill-gradient);
+      border-color: transparent;
+      color: var(--white);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .page-info {
+      font-size: 13px;
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-inner img,
+    .lightbox-inner video {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      line-height: 1;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <header class="page-header">
+    <a href="index.html" class="back-link">← Home</a>
+    <h1 class="page-title">Campaign Gallery</h1>
+  </header>
+
+  <main class="page-body">
+    <nav class="brand-selector" id="brandSelector" aria-label="Brand selector"></nav>
+
+    <div class="filter-bar" id="filterBar">
+      <div class="filter-group">
+        <button type="button" class="filter-btn active" data-filter="media" data-value="images">All Media</button>
+        <button type="button" class="filter-btn" data-filter="media" data-value="videos">Videos Only</button>
+      </div>
+      <div class="filter-group">
+        <button type="button" class="filter-btn active" data-filter="country" data-value="all">All Countries</button>
+        <button type="button" class="filter-btn" data-filter="country" data-value="US">US</button>
+        <button type="button" class="filter-btn" data-filter="country" data-value="CA">Canada</button>
+        <button type="button" class="filter-btn" data-filter="country" data-value="GB">UK</button>
+      </div>
+      <div class="filter-group">
+        <button type="button" class="filter-btn active" data-filter="status" data-value="all">All Status</button>
+        <button type="button" class="filter-btn" data-filter="status" data-value="active">Active</button>
+        <button type="button" class="filter-btn" data-filter="status" data-value="inactive">Inactive</button>
+      </div>
+      <div class="filter-group">
+        <select class="sort-select" id="sortSelect">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="longest">Longest running</option>
+          <option value="shortest">Shortest running</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ad-grid" id="adGrid"></div>
+    <p class="empty-state" id="emptyState" style="display:none">No ads match the current filters.</p>
+    <nav class="pagination" id="pagination" aria-label="Page navigation"></nav>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-inner" id="lightboxInner"></div>
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">&#x2715;</button>
+  </div>
+
+  <script>
+    const R2_BASE = "https://pub-27da4ed17c8748baa393fef533d9630f.r2.dev";
+    const PAGE_SIZE = 50;
+
+    let BRANDS = [];
+    let state = {
+      brand: null,
+      media: 'images',
+      status: 'all',
+      country: 'all',
+      sort: 'newest',
+      page: 1,
+    };
+
+    // Step 2: loadBrand() function
+    async function loadBrand(brand) {
+      const media = state.media; // capture before await to avoid race on rapid toggle
+      const file = media === 'videos' ? 'video_ads.json' : 'ads.json';
+      const url = `campaigns/${brand.dir}/${file}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch {
+        return [];
+      }
+    }
+
+    // Step 3: resolveActive() helper
+    function resolveActive(ad) {
+      if (ad.active === true) return true;
+      if (ad.active === false) return false;
+      const m = (ad.text || '').match(/\n(Active|Inactive)\n/);
+      if (m) return m[1] === 'Active';
+      return null;
+    }
+
+    // Step 4: parseDays() helper
+    function parseDays(started) {
+      if (!started) return null;
+      const d = new Date(started);
+      if (isNaN(d)) return null;
+      return Math.floor((Date.now() - d) / 86_400_000);
+    }
+
+    // Extract start/stop dates from the raw text blob.
+    // Active ads:   "Started running on Jan 22, 2026"  → started only
+    // Inactive ads: "Jul 28, 2024 - Jul 1, 2025"       → both
+    function parseDatesFromText(text) {
+      if (!text) return { started: null, stopped: null };
+      const rangeM = text.match(/\b([A-Z][a-z]+ \d{1,2}, \d{4})\s*-\s*([A-Z][a-z]+ \d{1,2}, \d{4})\b/);
+      if (rangeM) return { started: rangeM[1], stopped: rangeM[2] };
+      const startM = text.match(/Started running on ([A-Z][a-z]+ \d{1,2}, \d{4})/);
+      if (startM) return { started: startM[1], stopped: null };
+      return { started: null, stopped: null };
+    }
+
+    function renderBrandSelector() {
+      const nav = document.getElementById('brandSelector');
+      nav.innerHTML = '';
+      BRANDS.forEach(brand => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'brand-pill' + (brand === state.brand ? ' active' : '');
+        btn.textContent = brand.name;
+        btn.addEventListener('click', () => {
+          state.brand = brand;
+          renderBrandSelector();
+          loadAndRender();
+        });
+        nav.appendChild(btn);
+      });
+    }
+
+    const MIN_IMG_SIZE = 100; // px — reject only true icon/favicon-sized images
+
+    function buildImageCard(ad) {
+      const adId = ad.id;
+      const dir = state.brand.dir;
+
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+
+      // Some files are saved as {id}_2.jpg, others as plain {id}.jpg.
+      // Try _2.jpg first (most common), then plain .jpg, then CDN fallback.
+      const r2Src2 = R2_BASE ? `${R2_BASE}/campaigns/${dir}/images/${adId}_2.jpg` : null;
+      const r2Src = R2_BASE ? `${R2_BASE}/campaigns/${dir}/images/${adId}.jpg` : null;
+      const local2Src = `campaigns/${dir}/images/${adId}_2.jpg`;
+      const localSrc = `campaigns/${dir}/images/${adId}.jpg`;
+      const cdnSrc = (ad.images && ad.images[0]) || null;
+      const srcs = [r2Src2, r2Src, local2Src, localSrc, cdnSrc].filter(Boolean);
+      let srcIdx = 0;
+
+      const img = document.createElement('img');
+      img.alt = '';
+
+      img.onload = function () {
+        // Reject icon-sized images (thumbnails / 60×60 placeholders)
+        if (img.naturalWidth < MIN_IMG_SIZE && img.naturalHeight < MIN_IMG_SIZE) {
+          srcIdx++;
+          if (srcIdx < srcs.length) {
+            img.src = srcs[srcIdx]; // try next source
+          } else {
+            card.remove();
+          }
+        }
+      };
+
+      img.onerror = function () {
+        srcIdx++;
+        if (srcIdx < srcs.length) {
+          img.src = srcs[srcIdx];
+        } else {
+          card.remove();
+        }
+      };
+
+      img.src = srcs[srcIdx];
+      card.appendChild(img);
+
+      card.addEventListener('click', () => {
+        const expanded = document.createElement('img');
+        expanded.src = img.src;
+        expanded.alt = '';
+        openLightbox(expanded);
+      });
+
+      appendCardOverlays(card, ad);
+      return card;
+    }
+
+    function buildVideoCard(ad) {
+      const dir = state.brand.dir;
+
+      // Videos are uploaded to R2 as video_0001.mp4, video_0002.mp4… (index-based).
+      // Fall back to the CDN URL from video_srcs[] if R2 fails.
+      const paddedIdx = String(ad.index).padStart(4, '0');
+      const r2VideoSrc = R2_BASE ? `${R2_BASE}/campaigns/${dir}/videos/video_${paddedIdx}.mp4` : null;
+      const localVideoSrc = `campaigns/${dir}/videos/video_${paddedIdx}.mp4`;
+      const cdnVideoSrc = (ad.video_srcs && ad.video_srcs[0]) || null;
+      const videoSrcs = [r2VideoSrc, localVideoSrc, cdnVideoSrc].filter(Boolean);
+      if (!videoSrcs.length) return null;
+
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+
+      const video = document.createElement('video');
+      let videoSrcIdx = 0;
+      video.src = videoSrcs[0];
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.addEventListener('error', () => {
+        videoSrcIdx++;
+        if (videoSrcIdx < videoSrcs.length) {
+          video.src = videoSrcs[videoSrcIdx];
+        } else {
+          card.remove();
+        }
+      });
+      card.addEventListener('mouseenter', () => video.play().catch(() => { }));
+      card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+      card.appendChild(video);
+
+      const play = document.createElement('div');
+      play.className = 'play-icon';
+      card.appendChild(play);
+
+      card.addEventListener('click', () => {
+        const expanded = document.createElement('video');
+        expanded.src = video.src;
+        expanded.controls = true;
+        expanded.autoplay = true;
+        expanded.muted = false;
+        expanded.playsInline = true;
+        openLightbox(expanded);
+      });
+
+      appendCardOverlays(card, ad);
+      return card;
+    }
+
+    function appendCardOverlays(card, ad) {
+      const isActive = resolveActive(ad);
+
+      if (isActive !== null) {
+        const badge = document.createElement('span');
+        badge.className = 'status-badge ' + (isActive ? 'active' : 'inactive');
+        badge.textContent = isActive ? 'Active' : 'Inactive';
+        card.appendChild(badge);
+      }
+
+      const meta = document.createElement('div');
+      meta.className = 'card-meta';
+
+      // Resolve the best available start date and optional stop date.
+      // For active ads `ad.started` is populated; for inactive ads it's often
+      // empty and the date range lives in the raw `text` blob instead.
+      const textDates = parseDatesFromText(ad.text);
+      const started = ad.started || textDates.started;
+      const stopped = ad.stopped || textDates.stopped;
+
+      if (isActive === false && started && stopped) {
+        // Inactive: show full run range + duration
+        const startD = new Date(started);
+        const stopD = new Date(stopped);
+        const rangeSpan = document.createElement('span');
+        rangeSpan.textContent = `${started} – ${stopped}`;
+        meta.appendChild(rangeSpan);
+
+        if (!isNaN(startD) && !isNaN(stopD)) {
+          const runDays = Math.round((stopD - startD) / 86_400_000);
+          const daysSpan = document.createElement('span');
+          daysSpan.textContent = `${runDays} days`;
+          meta.appendChild(daysSpan);
+        }
+      } else if (isActive === false && started) {
+        // Inactive but only start date available
+        const dateSpan = document.createElement('span');
+        dateSpan.textContent = started;
+        meta.appendChild(dateSpan);
+      } else {
+        // Active (or unknown status): show start date + days live
+        const dateSpan = document.createElement('span');
+        dateSpan.textContent = started || '';
+        meta.appendChild(dateSpan);
+
+        const days = parseDays(started);
+        if (isActive && days !== null) {
+          const daysSpan = document.createElement('span');
+          daysSpan.textContent = `${days} days live`;
+          meta.appendChild(daysSpan);
+        }
+      }
+
+      card.appendChild(meta);
+    }
+
+    function applyFiltersAndSort(ads) {
+      let out = ads.filter(ad => {
+        // 1. Status Filter
+        const a = resolveActive(ad);
+        if (state.status === 'active' && a !== true) return false;
+        if (state.status === 'inactive' && a !== false) return false;
+
+        // 2. Country Filter
+        if (state.country !== 'all') {
+          const countries = ad.countries || ['US']; // fallback
+          if (!countries.includes(state.country)) return false;
+        }
+
+        return true;
+      });
+
+      const getDays = ad => parseDays(ad.started);
+      const isAct = ad => resolveActive(ad) === true;
+
+      if (state.sort === 'newest') {
+        out.sort((a, b) => (getDays(a) ?? Infinity) - (getDays(b) ?? Infinity));
+      } else if (state.sort === 'oldest') {
+        out.sort((a, b) => (getDays(b) ?? -Infinity) - (getDays(a) ?? -Infinity));
+      } else if (state.sort === 'longest') {
+        out.sort((a, b) => {
+          const aAct = isAct(a), bAct = isAct(b);
+          if (aAct !== bAct) return aAct ? -1 : 1;
+          return (getDays(b) ?? -1) - (getDays(a) ?? -1);
+        });
+      } else if (state.sort === 'shortest') {
+        out.sort((a, b) => {
+          const aAct = isAct(a), bAct = isAct(b);
+          if (aAct !== bAct) return aAct ? -1 : 1;
+          return (getDays(a) ?? Infinity) - (getDays(b) ?? Infinity);
+        });
+      }
+
+      return out;
+    }
+
+    function renderGrid(ads, resetPage) {
+      if (resetPage) state.page = 1;
+      const grid = document.getElementById('adGrid');
+      const empty = document.getElementById('emptyState');
+      const filtered = applyFiltersAndSort(ads);
+
+      grid.innerHTML = '';
+      if (filtered.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      empty.style.display = 'none';
+
+      const start = (state.page - 1) * PAGE_SIZE;
+      const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+      pageItems.forEach(ad => {
+        const card = state.media === 'videos' ? buildVideoCard(ad) : buildImageCard(ad);
+        if (card) grid.appendChild(card);
+      });
+
+      renderPagination(filtered.length, state.page, (newPage) => {
+        state.page = newPage;
+        renderGrid(ads);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    function renderPagination(total, currentPage, onPageChange) {
+      const container = document.getElementById('pagination');
+      container.innerHTML = '';
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      if (totalPages <= 1) return;
+
+      function makeBtn(label, page, isActive, isDisabled) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'page-btn' + (isActive ? ' active' : '');
+        btn.textContent = label;
+        btn.disabled = isDisabled;
+        if (!isDisabled && !isActive) {
+          btn.addEventListener('click', () => onPageChange(page));
+        }
+        return btn;
+      }
+
+      container.appendChild(makeBtn('←', currentPage - 1, false, currentPage === 1));
+
+      // Page numbers with ellipsis around current
+      const range = [];
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+          range.push(i);
+        } else if (range[range.length - 1] !== '…') {
+          range.push('…');
+        }
+      }
+      range.forEach(p => {
+        if (p === '…') {
+          const span = document.createElement('span');
+          span.className = 'page-info';
+          span.textContent = '…';
+          container.appendChild(span);
+        } else {
+          container.appendChild(makeBtn(String(p), p, p === currentPage, false));
+        }
+      });
+
+      const info = document.createElement('span');
+      info.className = 'page-info';
+      info.textContent = `${total} ads`;
+      container.appendChild(info);
+
+      container.appendChild(makeBtn('→', currentPage + 1, false, currentPage === totalPages));
+    }
+
+    let _currentAds = [];
+    let _renderGen = 0;
+
+    async function loadAndRender() {
+      const gen = ++_renderGen;
+      const grid = document.getElementById('adGrid');
+      grid.innerHTML = '<p class="loading-msg">Loading…</p>';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('pagination').innerHTML = '';
+      const ads = await loadBrand(state.brand);
+      if (gen !== _renderGen) return; // superseded by a later call
+      _currentAds = ads;
+      renderGrid(_currentAds, true);
+    }
+
+    async function init() {
+      try {
+        const res = await fetch('data/brands.json');
+        if (!res.ok) throw new Error("Failed to load brands.json");
+        BRANDS = await res.json();
+        // Map 'slug' to 'dir' for compatibility with existing code
+        BRANDS.forEach(b => b.dir = b.slug);
+
+        state.brand = BRANDS[0];
+
+        renderBrandSelector();
+        wireFilters();
+        loadAndRender();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('adGrid').innerHTML = '<p class="error-msg">Error: Could not load brand list.</p>';
+      }
+    }
+
+    function wireFilters() {
+      document.getElementById('filterBar').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        const { filter, value } = btn.dataset;
+        btn.closest('.filter-group').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (filter !== 'media' && filter !== 'status' && filter !== 'country') return;
+        state[filter] = value;
+        if (filter === 'media') {
+          loadAndRender();
+        } else {
+          renderGrid(_currentAds, true);
+        }
+      });
+
+      document.getElementById('sortSelect').addEventListener('change', e => {
+        state.sort = e.target.value;
+        renderGrid(_currentAds, true);
+      });
+    }
+
+    // ── Lightbox ──────────────────────────────────────────────────
+    const lightbox = document.getElementById('lightbox');
+    const lightboxInner = document.getElementById('lightboxInner');
+
+    function openLightbox(el) {
+      lightboxInner.innerHTML = '';
+      lightboxInner.appendChild(el);
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      // pause any video before removing
+      const v = lightboxInner.querySelector('video');
+      if (v) { v.pause(); v.currentTime = 0; }
+      lightboxInner.innerHTML = '';
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    init();
+  </script>
+</body>
+
+</html>
