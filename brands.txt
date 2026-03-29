@@ -138,5 +138,25 @@
     "name": "Crate & Barrel Canada",
     "slug": "crate-barrel-canada",
     "page_id": "2006199572725907"
+  },
+  {
+    "name": "MustardMade",
+    "slug": "mustardmade",
+    "page_id": "229688427513324"
+  },
+  {
+    "name": "Resource Furniture",
+    "slug": "resource-furniture",
+    "page_id": "288208135150"
+  },
+  {
+    "name": "Cozey",
+    "slug": "cozey",
+    "page_id": "109784177044406"
+  },
+  {
+    "name": "Burrow",
+    "slug": "burrow",
+    "page_id": "612471195588500"
   }
 ]
